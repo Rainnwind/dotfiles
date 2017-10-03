@@ -1,0 +1,37 @@
+#dotinstaller
+
+###Top panel
+#Sets the top panel transparent
+gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/ panel-opacity 0
+
+###Launcher
+#Auto hide launcher
+gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/ launcher-hide-mode 1
+
+#Set icon size for launcher
+dconf write /org/compiz/profiles/unity/plugins/unityshell/icon-size 22
+
+#Remove sticky edges
+gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/uni‌​tyshell/ launcher-capture-mouse false
+
+echo "Need to figure out how to set hotkeys ctrl+alt+w for windows spread - all applications"
+
+#Make launcher transparent
+gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/ launcher-opacity 0
+
+gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/ launcher-capture-mouse false
+
+echo "Need to figure out how to set corner as launcher activator"
+
+
+gsettings set com.canonical.indicator.datetime time-format 24-hour
+gsettings set com.canonical.indicator.datetime show-date true
+gsettings set com.canonical.indicator.datetime show-day true
+gsettings set com.canonical.indicator.datetime show-seconds true
+gsettings set com.canonical.indicator.datetime show-week-numbers true
+gsettings set com.canonical.indicator.datetime show-year true
+
+gsettings set com.canonical.indicator.power show-percentage true
+gsettings set com.canonical.indicator.power show-time true
+
+gsettings set com.canonical.indicator.sound preferred-media-players []

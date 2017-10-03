@@ -1,0 +1,7 @@
+#dotinstaller
+
+#Disable dim screen
+gsettings set org.gnome.settings-daemon.plugins.power idle-dim true
+
+#Disable idle power save
+gsettings set org.gnome.desktop.session idle-delay 0

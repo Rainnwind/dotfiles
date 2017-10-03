@@ -1,0 +1,8 @@
+#dotinstaller
+mkdir -p "$HOME/bin"
+cp "${HOME}/dotfiles/sources/wpaper" "${HOME}/bin"
+sudo chmod +x "${HOME}/bin/wpaper"
+crontab -l > mycron
+echo "*/15 * * * * ${HOME}/bin/wpaper" > mycron
+crontab mycron
+rm mycron

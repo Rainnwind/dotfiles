@@ -1,0 +1,2 @@
+#dotinstaller
+sudo apt install curl -y

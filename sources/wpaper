@@ -1,0 +1,72 @@
+#!/bin/bash
+
+PID=$(pgrep gnome-session)
+export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-)
+
+# Base variables
+BASE="https://www.reddit.com/r"
+if [ -z $1 ]; then SUBREDDIT="cityporn+skyporn+natureporn+wallpaper+streetart"; else SUBREDDIT=$1; fi
+if [ -z $2 ]; then SORT="new"; else SORT=$2; fi #new | rising | controversial | top | gilded | hot
+USERAGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36"
+ROOT_FOLDER="$HOME/background"
+LOG_FOLDER="$ROOT_FOLDER/logs"
+DATE=`date +%Y-%m-%d`
+DATETIME=`date +%Y-%m-%d:%H:%M:%S`
+mkdir -p "$LOG_FOLDER"
+mkdir -p "$ROOT_FOLDER/images/$SUBREDDIT"
+
+echo "$DATETIME: Checking for new image" >> "$LOG_FOLDER/$DATE"
+
+#https://newfivefour.com/unix-urlencode-urldecode-command-line-bash.html
+urlencode() {
+    # urlencode <string>
+
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%s' "$c" | xxd -p -c1 |
+                   while read c; do printf '%%%s' "$c"; done ;;
+        esac
+    done
+}
+urldecode() {
+    # urldecode <string>
+
+    local url_encoded="${1//+/ }"
+    printf '%b' "${url_encoded//%/\\x}"
+
+}
+echo "$BASE/$SUBREDDIT/$SORT"
+EPOCHDATE=`date +%s`
+EPOCHDATEFUTURE=$((EPOCHDATE+31536000))
+grep -P "\.reddit\.com\tTRUE\tFALSE\t[0-9]{10}\tover18\t1" "$ROOT_FOLDER/cookies.txt" || echo ".reddit.com	TRUE	FALSE	$EPOCHDATEFUTURE	over18	1" >> "$ROOT_FOLDER/cookies.txt"
+sed -i "s/[[:digit:]]\{10\}/$EPOCHDATEFUTURE/g" "$ROOT_FOLDER/cookies.txt"
+imageLinks=$(curl --dump-header "$ROOT_FOLDER/headers_and_cookies" --cookie "$ROOT_FOLDER/cookies.txt" --cookie-jar "$ROOT_FOLDER/cookies.txt" -L --max-redirs 3 -A "$USERAGENT" "$BASE/$SUBREDDIT/$SORT" | grep -oPi '(?<=data-href-url\=\")[^\"]+' | grep -i '\.jpeg\|\.jpg\|\.png' | tr " " "\n" | awk '!a[$0]++')
+firstImage=$(echo "$imageLinks" | sed '1!{d}')
+firstImageFile=$(echo "$firstImage" | grep -m1 -ioP '(?<=\/)[^\/]+($)')
+echo "$firstImage"
+
+if [ -z "$firstImageFile" ]; then #Check if firstImageFile is not an empty string
+    echo "$DATETIME: No image this time" >> "$LOG_FOLDER/$DATE"
+else
+    imageName="$(urldecode "$firstImageFile")"
+    currentDesktopImage=$(gsettings get org.gnome.desktop.background picture-uri)
+    newDesktopImage="file://$ROOT_FOLDER/images/$SUBREDDIT/$imageName"
+    if [ ! -f "$ROOT_FOLDER/images/$SUBREDDIT/$imageName" ]; then #Check that the file has not already been downloaded
+        echo "$DATETIME: Fetching file '$firstImage'" >> "$LOG_FOLDER/$DATE"
+        wget "$firstImage" -O "$ROOT_FOLDER/images/$SUBREDDIT/$imageName"
+        echo "$DATETIME: Setting 'file://$ROOT_FOLDER/images/$SUBREDDIT/$imageName' as desktop image" >> "$LOG_FOLDER/$DATE"
+        gsettings set org.gnome.desktop.background picture-uri "file://$ROOT_FOLDER/images/$SUBREDDIT/$imageName"
+    else
+        echo "$DATETIME: No new image this time" >> "$LOG_FOLDER/$DATE" 
+        if [ "$currentDesktopImage" != "'$newDesktopImage'" ]; then
+            echo "$DATETIME: Setting 'file://$ROOT_FOLDER/images/$SUBREDDIT/$imageName' as desktop image" >> "$LOG_FOLDER/$DATE"
+            gsettings set org.gnome.desktop.background picture-uri "file://$ROOT_FOLDER/images/$SUBREDDIT/$imageName"
+        else
+            echo "$DATETIME: Desktop image already set" >> "$LOG_FOLDER/$DATE"
+        fi
+	fi
+fi
+echo "---------------" >> "$LOG_FOLDER/$DATE"

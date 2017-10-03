@@ -1,0 +1,4 @@
+#dotinstaller
+mkdir -p "${HOME}/bin"
+cp "${HOME}/dotfiles/sources/upd" "${HOME}/bin"
+sudo chmod +x "${HOME}/bin/upd"

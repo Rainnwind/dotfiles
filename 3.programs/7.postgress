@@ -1,0 +1,10 @@
+#dotinstaller
+sudo apt-get install postgresql postgresql-contrib -y
+sudo apt-get install postgresql-client -y
+
+sudo adduser --no-create-home --disabled-password --gecos "" rebook
+sudo sh -c 'echo "rebook:rebook"|chpasswd'
+
+psql -c "CREATE USER rebook WITH PASSWORD 'rebook';"
+
+

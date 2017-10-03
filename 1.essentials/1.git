@@ -1,0 +1,4 @@
+#dotinstaller
+sudo apt install git -y
+git config --global user.email "re@eriksen.be"
+git config --global user.name "Your Name"
