@@ -1,5 +1,8 @@
 #dotinstaller
-sudo add-apt-repository ppa:numix/ppa -y
+the_ppa=numix
+if ! grep -q "^deb .*$the_ppa" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+    sudo add-apt-repository ppa:numix/ppa -y
+fi
 sudo apt-get update
 sudo apt-get install numix-gtk-theme numix-icon-theme-circle -y
 gsettings set org.gnome.desktop.interface gtk-theme "Numix"

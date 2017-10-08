@@ -1,7 +1,8 @@
 #dotinstaller
+if ! grep -q "nvm\.sh" "${HOME}/.zshrc"; then
+    #Install nvm
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash
 
-#Install nvm
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.5/install.sh | bash
-
-#Integrate nvm with oh-my-zsh
-echo "[[ -s ${HOME}/.nvm/nvm.sh ]] && . ${HOME}/.nvm/nvm.sh" >> "${HOME}/.zshrc"
+    #Integrate nvm with oh-my-zsh
+    #echo "[[ -s ${HOME}/.nvm/nvm.sh ]] && . ${HOME}/.nvm/nvm.sh" >> "${HOME}/.zshrc"
+fi

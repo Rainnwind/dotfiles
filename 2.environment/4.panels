@@ -9,7 +9,7 @@ gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshel
 gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/ launcher-hide-mode 1
 
 #Set icon size for launcher
-dconf write /org/compiz/profiles/unity/plugins/unityshell/icon-size 22
+gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/ icon-size 30
 
 #Remove sticky edges
 gsettings set org.compiz.unityshell:/org/compiz/profiles/unity/plugins/uni‌​tyshell/ launcher-capture-mouse false
